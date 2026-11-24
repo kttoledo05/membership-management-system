@@ -1,0 +1,2 @@
+@extends('layouts.app')
+@section('content')<h1>Edit category</h1><form class="card form-card" method="POST" action="{{ route('categories.update',$category) }}">@csrf @method('PUT')<label>Name<input name="name" value="{{ $category->name }}" required></label><label>Description<textarea name="description">{{ $category->description }}</textarea></label><button class="btn-primary">Update category</button></form>@endsection

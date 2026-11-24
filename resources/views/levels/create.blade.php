@@ -1,0 +1,2 @@
+@extends('layouts.app')
+@section('content')<h1>Add membership level</h1><form class="card form-card" method="POST" action="{{ route('levels.store') }}">@csrf<label>Name<input name="name" required></label><label>Fee<input type="number" step="0.01" name="fee" required></label><label>Validity in months<input type="number" name="validity_months" min="1" required></label><label>Benefits<textarea name="benefits"></textarea></label><button class="btn-primary">Save level</button></form>@endsection
