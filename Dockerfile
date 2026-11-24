@@ -1,26 +1,34 @@
+FROM node:20-alpine AS frontend
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY resources ./resources
+COPY vite.config.js ./
+
+RUN npm run build
+
+
 FROM php:8.3-apache
 
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    libzip-dev \
-    unzip \
-    git \
-    curl \
-    nodejs \
-    npm \
+RUN apt-get update \
+    && apt-get install -y libpq-dev libzip-dev unzip git \
     && docker-php-ext-install pdo_pgsql mbstring bcmath zip \
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
-
-RUN npm install
-RUN npm run build
+COPY --from=frontend /app/public/build ./public/build
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
